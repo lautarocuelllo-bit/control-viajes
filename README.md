@@ -2,6 +2,10 @@
 
 App para llevar la cuenta de los viajes compartidos: quién fue cada día, cuánto le debe cada uno al que maneja y quién ya pagó. Funciona en Android, iPhone y en la web.
 
+**[Abrir la app → viajes.genesiscodestudio.com](https://viajes.genesiscodestudio.com)**
+
+![Ingreso, panel del que maneja y panel del pasajero](docs/capturas/pantallas.png)
+
 ## Por qué existe
 
 Un amigo nos lleva a la facultad y le pagamos la nafta por viaje. Primero hice un programa de escritorio en Python ([`viajes.py`](#historia)) para que él registrara quién iba, pero tenía dos problemas:
@@ -75,6 +79,7 @@ src/
 ├── context/sesion.tsx   Sesión, perfil, grupo y rol
 └── lib/                 Cliente de Supabase, datos en tiempo real, formatos y colores
 supabase/migrations/     Tablas, reglas de acceso y funciones
+docs/capturas/           Capturas del README (datos de ejemplo)
 ```
 
 ## Historia
