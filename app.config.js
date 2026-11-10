@@ -6,6 +6,8 @@ const path = require('path');
 module.exports = ({ config }) => {
   const icono = path.join(__dirname, 'assets', 'local', 'icon.png');
   const favicon = path.join(__dirname, 'assets', 'local', 'favicon.png');
+  // Android recorta el ícono en círculo: el frente lleva margen alrededor
+  const frenteAndroid = path.join(__dirname, 'assets', 'local', 'android-foreground.png');
   if (!fs.existsSync(icono)) return config;
 
   return {
@@ -19,7 +21,7 @@ module.exports = ({ config }) => {
       ...config.android,
       adaptiveIcon: {
         backgroundColor: config.android?.adaptiveIcon?.backgroundColor ?? '#0c0c0d',
-        foregroundImage: './assets/local/icon.png',
+        foregroundImage: fs.existsSync(frenteAndroid) ? './assets/local/android-foreground.png' : './assets/local/icon.png',
       },
     },
   };

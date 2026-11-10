@@ -36,7 +36,10 @@ export default function PanelPasajero() {
       .then(({ data }) => setChofer(data?.nombre ?? null));
   }, [grupo]);
 
-  const movimientos = useMemo(() => mezclarMovimientos(datos.viajes, datos.pagos), [datos.viajes, datos.pagos]);
+  const movimientos = useMemo(
+    () => mezclarMovimientos(datos.viajes, datos.pagos, datos.deudas),
+    [datos.viajes, datos.pagos, datos.deudas]
+  );
 
   if (!grupo) return null;
   if (datos.cargando) return <Cargando />;
@@ -103,6 +106,8 @@ export default function PanelPasajero() {
         </Text>
         <Texto variante="suave" style={{ textAlign: 'center' }}>
           {saldo?.cantidad_viajes ?? 0} {saldo?.cantidad_viajes === 1 ? 'viaje' : 'viajes'}, pagaste {plata(saldo?.total_pagos ?? 0)}
+          {saldo?.deuda_anterior ? `
+${saldo.deuda_anterior > 0 ? 'Deuda' : 'A favor'} de antes: ${plata(Math.abs(saldo.deuda_anterior))}` : ''}
         </Texto>
         {pagosPendientes > 0 ? (
           <View style={estilos.pendiente}>

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { supabase } from '@/lib/supabase';
-import type { Pago, Perfil, Saldo, Viaje } from '@/lib/tipos';
+import type { DeudaAnterior, Pago, Perfil, Saldo, Viaje } from '@/lib/tipos';
 
 type Datos = {
   /** Pasajeros del grupo (el chofer ve a todos; el pasajero solo a sí mismo) */
@@ -9,9 +9,10 @@ type Datos = {
   saldos: Saldo[];
   viajes: Viaje[];
   pagos: Pago[];
+  deudas: DeudaAnterior[];
 };
 
-const VACIO: Datos = { pasajeros: [], saldos: [], viajes: [], pagos: [] };
+const VACIO: Datos = { pasajeros: [], saldos: [], viajes: [], pagos: [], deudas: [] };
 
 /**
  * Carga todo lo del grupo y se vuelve a cargar solo cuando alguien
@@ -28,7 +29,7 @@ export function useDatosGrupo(grupoId: string | undefined, alCambiarGrupo?: () =
 
   const cargar = useCallback(async () => {
     if (!grupoId) return;
-    const [miembros, saldos, viajes, pagos] = await Promise.all([
+    const [miembros, saldos, viajes, pagos, deudas] = await Promise.all([
       supabase.from('miembros').select('perfiles(id, nombre)').eq('grupo_id', grupoId),
       supabase.from('saldos').select('*').eq('grupo_id', grupoId),
       supabase
@@ -44,9 +45,14 @@ export function useDatosGrupo(grupoId: string | undefined, alCambiarGrupo?: () =
         .eq('grupo_id', grupoId)
         .order('created_at', { ascending: false })
         .limit(300),
+      supabase
+        .from('deudas_anteriores')
+        .select('id, grupo_id, pasajero_id, monto, nota, estado, created_at')
+        .eq('grupo_id', grupoId)
+        .order('created_at', { ascending: false }),
     ]);
 
-    const fallo = miembros.error ?? saldos.error ?? viajes.error ?? pagos.error;
+    const fallo = miembros.error ?? saldos.error ?? viajes.error ?? pagos.error ?? deudas.error;
     if (fallo) {
       setError('No se pudieron cargar los datos. Deslizá hacia abajo para reintentar.');
       return;
@@ -60,6 +66,7 @@ export function useDatosGrupo(grupoId: string | undefined, alCambiarGrupo?: () =
       saldos: (saldos.data ?? []) as Saldo[],
       viajes: (viajes.data ?? []) as Viaje[],
       pagos: (pagos.data ?? []) as Pago[],
+      deudas: (deudas.data ?? []) as DeudaAnterior[],
     });
   }, [grupoId]);
 
@@ -83,6 +90,7 @@ export function useDatosGrupo(grupoId: string | undefined, alCambiarGrupo?: () =
       .on('postgres_changes', { event: '*', schema: 'public', table: 'viajes', filter: filtro }, recargarPronto)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'pagos', filter: filtro }, recargarPronto)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'miembros', filter: filtro }, recargarPronto)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'deudas_anteriores', filter: filtro }, recargarPronto)
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'grupos', filter: `id=eq.${grupoId}` }, () =>
         alCambiarGrupoRef.current?.()
       )

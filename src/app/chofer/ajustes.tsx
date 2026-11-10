@@ -1,4 +1,5 @@
-import { FloppyDisk, ShareNetwork, SignOut } from 'phosphor-react-native';
+import { router } from 'expo-router';
+import { ClockCounterClockwise, FloppyDisk, ShareNetwork, SignOut } from 'phosphor-react-native';
 import { useState } from 'react';
 import { Platform, Share, Text } from 'react-native';
 
@@ -88,6 +89,19 @@ export default function Ajustes() {
         {mensaje ? <Aviso texto={mensaje} /> : null}
         <MensajeError mensaje={error} />
         <Boton titulo="Guardar precio" icono={FloppyDisk} alTocar={guardarPrecio} cargando={guardando} />
+      </Tarjeta>
+
+      <Tarjeta>
+        <Texto variante="subtitulo">Cuentas anteriores</Texto>
+        <Texto variante="suave">
+          Si llevabas las cuentas con viajes.py, podés traer el historial o lo que debía cada uno.
+        </Texto>
+        <Boton
+          titulo="Importar de viajes.py"
+          icono={ClockCounterClockwise}
+          tipo="secundario"
+          alTocar={() => router.push('/chofer/importar')}
+        />
       </Tarjeta>
 
       <Tarjeta>

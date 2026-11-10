@@ -40,9 +40,10 @@ export default function DetallePasajero() {
     () =>
       mezclarMovimientos(
         datos.viajes.filter((v) => v.pasajero_id === pasajeroId),
-        datos.pagos.filter((p) => p.pasajero_id === pasajeroId)
+        datos.pagos.filter((p) => p.pasajero_id === pasajeroId),
+        datos.deudas.filter((d) => d.pasajero_id === pasajeroId)
       ),
-    [datos.viajes, datos.pagos, pasajeroId]
+    [datos.viajes, datos.pagos, datos.deudas, pasajeroId]
   );
 
   if (!grupo) return null;
@@ -78,7 +79,7 @@ export default function DetallePasajero() {
   }
 
   async function anular(m: Movimiento) {
-    const que = m.tipo === 'viaje' ? 'este viaje' : 'este pago';
+    const que = m.tipo === 'viaje' ? 'este viaje' : m.tipo === 'pago' ? 'este pago' : 'esta deuda anterior';
     const ok = await confirmar(`¿Anular ${que}?`, `Se descuenta del saldo de ${pasajero?.nombre}. Queda en el historial como anulado.`, 'Anular');
     if (!ok) return;
     const { error } = await supabase.rpc('anular_movimiento', { p_tipo: m.tipo, p_id: m.id });
@@ -105,6 +106,9 @@ export default function DetallePasajero() {
         <Texto variante="suave">
           {saldo?.cantidad_viajes ?? 0} {saldo?.cantidad_viajes === 1 ? 'viaje' : 'viajes'} por{' '}
           {plata(saldo?.total_viajes ?? 0)} · pagó {plata(saldo?.total_pagos ?? 0)}
+          {saldo?.deuda_anterior
+            ? ` · ${saldo.deuda_anterior > 0 ? 'debía' : 'tenía a favor'} ${plata(Math.abs(saldo.deuda_anterior))} de antes`
+            : ''}
         </Texto>
       </Tarjeta>
 

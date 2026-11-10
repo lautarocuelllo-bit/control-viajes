@@ -21,7 +21,7 @@ import { useSesion } from '@/context/sesion';
 import { desdeISO, fechaCorta, fechaISO, plata, sumarDias } from '@/lib/formato';
 import { mensajeDeError, supabase } from '@/lib/supabase';
 import { colores, espacio, fuentes, radio, tamIcono } from '@/lib/tema';
-import { mezclarMovimientos } from '@/lib/tipos';
+import { mezclarMovimientos, type Movimiento } from '@/lib/tipos';
 import { useDatosGrupo } from '@/lib/useDatosGrupo';
 
 const DIAS_ATRAS = 30;
@@ -103,7 +103,7 @@ export default function PanelChofer() {
     datos.recargar();
   }
 
-  async function resolver(tipo: 'viaje' | 'pago', id: string, aprobar: boolean) {
+  async function resolver(tipo: Movimiento['tipo'], id: string, aprobar: boolean) {
     setResolviendo(id);
     setError(null);
     const { error } = await supabase.rpc('resolver_movimiento', { p_tipo: tipo, p_id: id, p_aprobar: aprobar });

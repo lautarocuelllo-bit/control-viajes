@@ -20,6 +20,7 @@ export default function LayoutChofer() {
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="ajustes" options={{ title: 'Ajustes' }} />
       <Stack.Screen name="[pasajeroId]" options={{ title: 'Pasajero' }} />
+      <Stack.Screen name="importar" options={{ title: 'Importar de viajes.py' }} />
     </Stack>
   );
 }

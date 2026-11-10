@@ -197,6 +197,7 @@ export function Campo({
   etiqueta,
   ayuda,
   contrasena,
+  style,
   ...props
 }: TextInputProps & { etiqueta: string; ayuda?: string; contrasena?: boolean }) {
   const [visible, setVisible] = useState(false);
@@ -209,11 +210,11 @@ export function Campo({
         <TextInput
           placeholderTextColor={colores.textoSuave}
           accessibilityLabel={etiqueta}
-          style={[estilos.campo, contrasena && { paddingRight: 52 }]}
           secureTextEntry={contrasena && !visible}
           autoCapitalize={contrasena ? 'none' : props.autoCapitalize}
           autoCorrect={contrasena ? false : props.autoCorrect}
           {...props}
+          style={[estilos.campo, contrasena && { paddingRight: 52 }, style]}
         />
         {contrasena ? (
           <Pressable

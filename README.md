@@ -23,6 +23,7 @@ Esta versión vive en la nube y cada uno la abre desde su teléfono o la compu.
 - Confirma o rechaza los avisos de los pasajeros.
 - Ve el saldo de cada uno, registra los pagos que recibe y anula lo que se cargó por error.
 - Cambia el precio cuando sube la nafta. Los viajes ya registrados guardan el precio que tenían.
+- Trae las cuentas de la app vieja: pega el `historial.json` (o el `deudas.json`) de `viajes.py`, elige quién es quién y se cargan los viajes, pagos o deudas anteriores.
 
 **Los pasajeros**
 - Ven su saldo y su historial.
@@ -60,6 +61,18 @@ npx expo start
 ```
 
 Con la app **Expo Go** escaneás el QR para abrirla en el teléfono, o apretás `w` para la versión web.
+
+### APK para Android
+
+Con [Android Studio](https://developer.android.com/studio) instalado:
+
+```bash
+npx expo prebuild --platform android
+cd android
+./gradlew assembleRelease
+```
+
+El APK queda en `android/app/build/outputs/apk/release/app-release.apk`. Lleva adentro los datos de `.env.local`, así que hay que completarlo antes de compilar.
 
 ### Logo propio (opcional)
 
