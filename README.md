@@ -57,6 +57,10 @@ npx expo start
 
 Con la app **Expo Go** escaneás el QR para abrirla en el teléfono, o apretás `w` para la versión web.
 
+### Logo propio (opcional)
+
+Si ponés `logo.png` (cuadrado, 256 px o más), `icon.png` (1024 px) y `favicon.png` en `assets/local/`, la app los usa como marca, ícono y favicon. Esa carpeta está en el `.gitignore`, así que no se sube: sin ella la app muestra la marca por defecto. Después de agregarlos, reiniciá con `npx expo start --clear`.
+
 ## Estructura
 
 ```

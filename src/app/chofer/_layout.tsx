@@ -4,7 +4,7 @@ import { colores } from '@/lib/tema';
 
 // Si alguien entra directo a /chofer/ajustes, igual queda el panel debajo
 // para poder volver con la flecha.
-export const unstable_settings = { initialRouteName: 'index' };
+export const unstable_settings = { anchor: 'index' };
 
 export default function LayoutChofer() {
   return (

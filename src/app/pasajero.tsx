@@ -2,6 +2,7 @@ import { Car, Clock, HandCoins, SignOut } from 'phosphor-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { Marca } from '@/components/Marca';
 import { ListaMovimientos } from '@/components/Movimientos';
 import { Aviso, Boton, Campo, Cargando, MensajeError, Pantalla, Seccion, Tarjeta, Texto } from '@/components/ui';
 import { useSesion } from '@/context/sesion';
@@ -79,11 +80,18 @@ export default function PanelPasajero() {
 
   return (
     <Pantalla recargando={datos.recargando} alRecargar={datos.recargar}>
-      <View style={{ gap: espacio.xs, marginTop: espacio.s }}>
-        <Texto variante="suave">Hola, {perfil?.nombre}</Texto>
-        <Texto variante="titulo">{grupo.nombre}</Texto>
-        {chofer ? <Texto variante="suave">Te lleva {chofer} · {plata(grupo.precio_viaje)} por viaje</Texto> : null}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: espacio.m, marginTop: espacio.s }}>
+        <Marca tam={48} />
+        <View style={{ flex: 1 }}>
+          <Texto variante="suave">Hola, {perfil?.nombre}</Texto>
+          <Texto variante="titulo">{grupo.nombre}</Texto>
+        </View>
       </View>
+      {chofer ? (
+        <Texto variante="suave" style={{ marginTop: -espacio.m }}>
+          Te lleva {chofer} · {plata(grupo.precio_viaje)} por viaje
+        </Texto>
+      ) : null}
 
       <MensajeError mensaje={datos.error} />
 

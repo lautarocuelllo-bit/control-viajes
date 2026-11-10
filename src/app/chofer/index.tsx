@@ -3,6 +3,7 @@ import { CaretLeft, CaretRight, Check, CheckCircle, GearSix, ShareNetwork, X } f
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Marca } from '@/components/Marca';
 import { FilaMovimiento } from '@/components/Movimientos';
 import {
   Aviso,
@@ -121,6 +122,7 @@ export default function PanelChofer() {
     <Pantalla recargando={datos.recargando} alRecargar={datos.recargar}>
       {/* Encabezado */}
       <View style={estilos.encabezado}>
+        <Marca tam={48} />
         <View style={{ flex: 1 }}>
           <Texto variante="suave">Hola, {perfil?.nombre}</Texto>
           <Texto variante="titulo">{grupo.nombre}</Texto>
