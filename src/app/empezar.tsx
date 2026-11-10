@@ -1,10 +1,11 @@
+import { Car, SignOut, Users } from 'phosphor-react-native';
 import { useState } from 'react';
 import { View } from 'react-native';
 
 import { Boton, Campo, MensajeError, Pantalla, Tarjeta, Texto } from '@/components/ui';
 import { useSesion } from '@/context/sesion';
 import { mensajeDeError, supabase } from '@/lib/supabase';
-import { espacio } from '@/lib/tema';
+import { colores, espacio, tamIcono } from '@/lib/tema';
 
 // Primera vez: o creás el grupo (sos el que maneja) o te unís con el código
 export default function Empezar() {
@@ -48,11 +49,14 @@ export default function Empezar() {
   return (
     <Pantalla>
       <View style={{ gap: espacio.s, marginTop: espacio.xl }}>
-        <Texto variante="titulo">Hola{perfil ? `, ${perfil.nombre}` : ''} 👋</Texto>
-        <Texto variante="suave">Para empezar, uníte al grupo de quien te lleva o creá el tuyo si sos el que maneja.</Texto>
+        <Texto variante="titulo">Hola{perfil ? `, ${perfil.nombre}` : ''}</Texto>
+        <Texto variante="suave" style={{ fontSize: 16, lineHeight: 23 }}>
+          Uníte al grupo de quien te lleva, o creá el tuyo si sos el que maneja.
+        </Texto>
       </View>
 
       <Tarjeta>
+        <Users size={tamIcono.l} color={colores.acento} />
         <Texto variante="subtitulo">Me llevan</Texto>
         <Texto variante="suave">Pedile el código de 6 números al que maneja.</Texto>
         <Campo
@@ -60,7 +64,7 @@ export default function Empezar() {
           value={codigo}
           onChangeText={(t) => setCodigo(t.replace(/\D/g, '').slice(0, 6))}
           keyboardType="number-pad"
-          placeholder="123456"
+          placeholder="Ej: 123456"
           maxLength={6}
           onSubmitEditing={unirme}
         />
@@ -69,6 +73,7 @@ export default function Empezar() {
       </Tarjeta>
 
       <Tarjeta>
+        <Car size={tamIcono.l} color={colores.acento} />
         <Texto variante="subtitulo">Yo manejo</Texto>
         <Texto variante="suave">Creás el grupo, le pasás el código a los demás y registrás quién va cada día.</Texto>
         <Campo etiqueta="Nombre del grupo" value={nombreGrupo} onChangeText={setNombreGrupo} maxLength={60} />
@@ -84,7 +89,7 @@ export default function Empezar() {
         <Boton titulo="Crear grupo" tipo="secundario" alTocar={crear} cargando={creando} />
       </Tarjeta>
 
-      <Boton titulo="Cerrar sesión" tipo="texto" alTocar={salir} />
+      <Boton titulo="Cerrar sesión" icono={SignOut} tipo="texto" alTocar={salir} />
     </Pantalla>
   );
 }

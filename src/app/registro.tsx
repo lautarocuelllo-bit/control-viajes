@@ -1,10 +1,12 @@
 import { Link } from 'expo-router';
+import { EnvelopeSimple, UserPlus } from 'phosphor-react-native';
 import { useState } from 'react';
 import { View } from 'react-native';
 
+import { Marca } from '@/components/Marca';
 import { Boton, Campo, MensajeError, Pantalla, Tarjeta, Texto } from '@/components/ui';
 import { mensajeDeError, supabase } from '@/lib/supabase';
-import { colores, espacio } from '@/lib/tema';
+import { colores, espacio, fuentes, tamIcono } from '@/lib/tema';
 
 export default function Registro() {
   const [nombre, setNombre] = useState('');
@@ -37,11 +39,12 @@ export default function Registro() {
     return (
       <Pantalla>
         <Tarjeta style={{ marginTop: espacio.xxl }}>
+          <EnvelopeSimple size={tamIcono.l} color={colores.acento} />
           <Texto variante="subtitulo">Revisá tu email</Texto>
           <Texto variante="suave">
             Te mandamos un link a {email.trim()}. Tocalo para confirmar tu cuenta y después ingresá.
           </Texto>
-          <Link href="/ingresar" style={{ color: colores.acento, fontWeight: '700' }}>
+          <Link href="/ingresar" style={{ color: colores.acento, fontFamily: fuentes.semi }}>
             Ir a ingresar
           </Link>
         </Tarjeta>
@@ -51,9 +54,14 @@ export default function Registro() {
 
   return (
     <Pantalla>
-      <View style={{ gap: espacio.s, marginTop: espacio.xxl }}>
-        <Texto variante="titulo">Crear cuenta</Texto>
-        <Texto variante="suave">Una sola vez. Después entrás desde el celular o la compu.</Texto>
+      <View style={{ gap: espacio.l, marginTop: espacio.xxl }}>
+        <Marca tam={48} />
+        <View style={{ gap: espacio.s }}>
+          <Texto variante="titulo">Crear cuenta</Texto>
+          <Texto variante="suave" style={{ fontSize: 16, lineHeight: 23 }}>
+            Una sola vez. Después entrás desde el celular o la compu.
+          </Texto>
+        </View>
       </View>
 
       <Tarjeta>
@@ -80,19 +88,19 @@ export default function Registro() {
           etiqueta="Contraseña"
           value={contrasena}
           onChangeText={setContrasena}
-          secureTextEntry
+          contrasena
           autoComplete="new-password"
           textContentType="newPassword"
           ayuda="Al menos 6 caracteres."
           onSubmitEditing={registrarme}
         />
         <MensajeError mensaje={error} />
-        <Boton titulo="Crear cuenta" alTocar={registrarme} cargando={enviando} />
+        <Boton titulo="Crear cuenta" icono={UserPlus} alTocar={registrarme} cargando={enviando} />
       </Tarjeta>
 
       <Texto variante="suave" style={{ textAlign: 'center' }}>
         ¿Ya tenés cuenta?{' '}
-        <Link href="/ingresar" style={{ color: colores.acento, fontWeight: '700' }}>
+        <Link href="/ingresar" style={{ color: colores.acento, fontFamily: fuentes.semi }}>
           Ingresá
         </Link>
       </Texto>

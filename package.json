@@ -3,18 +3,22 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "dependencies": {
+    "@expo-google-fonts/outfit": "^0.4.3",
     "@supabase/supabase-js": "^2.119.0",
     "expo": "~58.0.23",
     "expo-constants": "~58.0.15",
+    "expo-font": "~58.0.11",
     "expo-linking": "~58.0.16",
     "expo-router": "~58.0.30",
     "expo-sqlite": "~58.0.15",
     "expo-status-bar": "~58.0.4",
+    "phosphor-react-native": "^3.0.6",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-native": "0.88.1",
     "react-native-safe-area-context": "~5.11.1",
     "react-native-screens": "~4.30.1",
+    "react-native-svg": "15.16.0",
     "react-native-web": "^0.21.4"
   },
   "devDependencies": {

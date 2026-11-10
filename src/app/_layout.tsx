@@ -1,5 +1,15 @@
+import {
+  Outfit_400Regular,
+  Outfit_500Medium,
+  Outfit_600SemiBold,
+  Outfit_700Bold,
+  Outfit_800ExtraBold,
+  useFonts,
+} from '@expo-google-fonts/outfit';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { IconContext } from 'phosphor-react-native';
+import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { Cargando } from '@/components/ui';
@@ -36,12 +46,28 @@ function Navegacion() {
 }
 
 export default function RootLayout() {
+  const [fuentesListas, errorFuentes] = useFonts({
+    Outfit_400Regular,
+    Outfit_500Medium,
+    Outfit_600SemiBold,
+    Outfit_700Bold,
+    Outfit_800ExtraBold,
+  });
+
+  // Mientras cargan las fuentes, solo el fondo (si fallan, sigue con la del sistema)
+  if (!fuentesListas && !errorFuentes) {
+    return <View style={{ flex: 1, backgroundColor: colores.fondo }} />;
+  }
+
   return (
     <SafeAreaProvider>
-      <ProveedorSesion>
-        <StatusBar style="light" />
-        <Navegacion />
-      </ProveedorSesion>
+      {/* Todos los íconos: mismo color base y mismo grosor */}
+      <IconContext.Provider value={{ color: colores.texto, size: 22, weight: 'regular' }}>
+        <ProveedorSesion>
+          <StatusBar style="light" />
+          <Navegacion />
+        </ProveedorSesion>
+      </IconContext.Provider>
     </SafeAreaProvider>
   );
 }

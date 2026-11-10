@@ -1,11 +1,12 @@
+import { FloppyDisk, ShareNetwork, SignOut } from 'phosphor-react-native';
 import { useState } from 'react';
 import { Platform, Share, Text } from 'react-native';
 
-import { Boton, Campo, confirmar, MensajeError, Pantalla, Tarjeta, Texto } from '@/components/ui';
+import { Aviso, Boton, Campo, confirmar, MensajeError, Pantalla, Tarjeta, Texto } from '@/components/ui';
 import { useSesion } from '@/context/sesion';
 import { plata } from '@/lib/formato';
 import { mensajeDeError, supabase } from '@/lib/supabase';
-import { colores, espacio } from '@/lib/tema';
+import { colores, espacio, fuentes } from '@/lib/tema';
 
 export default function Ajustes() {
   const { grupo, perfil, recargar, salir } = useSesion();
@@ -62,9 +63,9 @@ export default function Ajustes() {
         <Text
           selectable
           style={{
-            color: colores.texto,
+            color: colores.acento,
             fontSize: 40,
-            fontWeight: '800',
+            fontFamily: fuentes.extra,
             letterSpacing: 8,
             textAlign: 'center',
             paddingVertical: espacio.s,
@@ -72,7 +73,7 @@ export default function Ajustes() {
         >
           {grupo.codigo}
         </Text>
-        <Boton titulo="Compartir código" tipo="secundario" alTocar={compartirCodigo} />
+        <Boton titulo="Compartir código" icono={ShareNetwork} tipo="secundario" alTocar={compartirCodigo} />
       </Tarjeta>
 
       <Tarjeta>
@@ -84,14 +85,14 @@ export default function Ajustes() {
           keyboardType="number-pad"
           ayuda="Cuando sube la nafta, cambialo acá. No afecta a los viajes ya registrados."
         />
-        {mensaje ? <Text style={{ color: colores.acento }}>{mensaje}</Text> : null}
+        {mensaje ? <Aviso texto={mensaje} /> : null}
         <MensajeError mensaje={error} />
-        <Boton titulo="Guardar precio" alTocar={guardarPrecio} cargando={guardando} />
+        <Boton titulo="Guardar precio" icono={FloppyDisk} alTocar={guardarPrecio} cargando={guardando} />
       </Tarjeta>
 
       <Tarjeta>
         <Texto variante="suave">Sesión iniciada como {perfil?.nombre}</Texto>
-        <Boton titulo="Cerrar sesión" tipo="peligro" alTocar={salir} />
+        <Boton titulo="Cerrar sesión" icono={SignOut} tipo="peligro" alTocar={salir} />
       </Tarjeta>
     </Pantalla>
   );

@@ -1,15 +1,16 @@
+import { Car, Clock, HandCoins, type Icon, Prohibit, XCircle } from 'phosphor-react-native';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Boton, Texto } from '@/components/ui';
 import { fechaCorta, plata } from '@/lib/formato';
-import { colores, espacio, radio } from '@/lib/tema';
+import { colores, espacio, fuentes, radio, tamIcono } from '@/lib/tema';
 import type { Estado, Movimiento } from '@/lib/tipos';
 
-const ETIQUETA_ESTADO: Record<Estado, { texto: string; color: string } | null> = {
+const ESTADOS: Record<Estado, { texto: string; icono: Icon; color: string } | null> = {
   confirmado: null,
-  pendiente: { texto: 'Esperando confirmación', color: colores.pendiente },
-  rechazado: { texto: 'Rechazado', color: colores.textoSuave },
-  anulado: { texto: 'Anulado', color: colores.textoSuave },
+  pendiente: { texto: 'Esperando confirmación', icono: Clock, color: colores.acento },
+  rechazado: { texto: 'Rechazado', icono: XCircle, color: colores.textoSuave },
+  anulado: { texto: 'Anulado', icono: Prohibit, color: colores.textoSuave },
 };
 
 export function FilaMovimiento({
@@ -23,31 +24,41 @@ export function FilaMovimiento({
   alAnular?: () => void;
 }) {
   const esViaje = movimiento.tipo === 'viaje';
-  const estado = ETIQUETA_ESTADO[movimiento.estado];
+  const estado = ESTADOS[movimiento.estado];
   const cuenta = movimiento.estado === 'confirmado';
+  const tachado = movimiento.estado === 'rechazado' || movimiento.estado === 'anulado';
   const fecha = esViaje ? movimiento.fecha : movimiento.created_at.slice(0, 10);
+  const IconoTipo = esViaje ? Car : HandCoins;
 
   return (
     <View style={estilos.fila}>
-      <Text style={estilos.icono}>{esViaje ? '🚗' : '💵'}</Text>
+      <View style={estilos.icono}>
+        <IconoTipo size={tamIcono.m} color={cuenta ? colores.acento : colores.textoSuave} />
+      </View>
       <View style={{ flex: 1, gap: 2 }}>
-        <Texto style={{ fontWeight: '600' }}>
-          {nombre ? `${nombre} · ` : ''}
-          {esViaje ? 'Viaje' : 'Pago'}
+        <Texto variante="fuerte">
+          {nombre ? `${nombre}, ` : ''}
+          {esViaje ? (nombre ? 'viaje' : 'Viaje') : nombre ? 'pago' : 'Pago'}
         </Texto>
-        <Texto variante="suave">
+        <Texto variante="suave" numberOfLines={1}>
           {fechaCorta(fecha)}
           {!esViaje && movimiento.nota ? ` · ${movimiento.nota}` : ''}
         </Texto>
-        {estado ? <Text style={[estilos.estado, { color: estado.color }]}>{estado.texto}</Text> : null}
+        {estado ? (
+          <View style={estilos.estado}>
+            <estado.icono size={14} color={estado.color} />
+            <Text style={[estilos.estadoTexto, { color: estado.color }]}>{estado.texto}</Text>
+          </View>
+        ) : null}
       </View>
       <View style={{ alignItems: 'flex-end', gap: espacio.xs }}>
         <Text
           style={[
             estilos.monto,
-            { color: esViaje ? colores.deuda : colores.acento },
+            // Viajes suman deuda (dorado), pagos la bajan (texto normal)
+            { color: esViaje ? colores.acento : colores.texto },
             !cuenta && { color: colores.textoSuave },
-            (movimiento.estado === 'rechazado' || movimiento.estado === 'anulado') && estilos.tachado,
+            tachado && estilos.tachado,
           ]}
         >
           {esViaje ? '+' : '−'} {plata(movimiento.monto)}
@@ -69,7 +80,16 @@ export function ListaMovimientos({
   alAnular?: (m: Movimiento) => void;
   vacio?: string;
 }) {
-  if (movimientos.length === 0) return <Texto variante="suave">{vacio}</Texto>;
+  if (movimientos.length === 0) {
+    return (
+      <View style={[estilos.lista, estilos.vacio]}>
+        <Car size={tamIcono.l} color={colores.textoSuave} />
+        <Texto variante="suave" style={{ textAlign: 'center' }}>
+          {vacio}
+        </Texto>
+      </View>
+    );
+  }
   return (
     <View style={estilos.lista}>
       {movimientos.map((m, i) => (
@@ -93,10 +113,19 @@ const estilos = StyleSheet.create({
     borderRadius: radio.l,
     paddingHorizontal: espacio.l,
   },
+  vacio: { alignItems: 'center', gap: espacio.s, paddingVertical: espacio.xl },
   separador: { borderTopWidth: 1, borderTopColor: colores.borde },
   fila: { flexDirection: 'row', alignItems: 'center', gap: espacio.m, paddingVertical: espacio.m },
-  icono: { fontSize: 22 },
-  estado: { fontSize: 13, fontWeight: '600' },
-  monto: { fontSize: 16, fontWeight: '700', fontVariant: ['tabular-nums'] },
+  icono: {
+    width: 40,
+    height: 40,
+    borderRadius: radio.m,
+    backgroundColor: colores.superficie2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  estado: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
+  estadoTexto: { fontSize: 13, fontFamily: fuentes.medio },
+  monto: { fontSize: 16, fontFamily: fuentes.semi, fontVariant: ['tabular-nums'] },
   tachado: { textDecorationLine: 'line-through' },
 });

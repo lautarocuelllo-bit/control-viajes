@@ -1,13 +1,25 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
+import { HandCoins } from 'phosphor-react-native';
 import { useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 
 import { ListaMovimientos } from '@/components/Movimientos';
-import { Boton, Campo, Cargando, confirmar, MensajeError, Pantalla, Seccion, Tarjeta, Texto } from '@/components/ui';
+import {
+  Aviso,
+  Boton,
+  Campo,
+  Cargando,
+  confirmar,
+  MensajeError,
+  Pantalla,
+  Seccion,
+  Tarjeta,
+  Texto,
+} from '@/components/ui';
 import { useSesion } from '@/context/sesion';
 import { plata } from '@/lib/formato';
 import { mensajeDeError, supabase } from '@/lib/supabase';
-import { colores, espacio } from '@/lib/tema';
+import { colores, espacio, fuentes } from '@/lib/tema';
 import { mezclarMovimientos, type Movimiento } from '@/lib/tipos';
 import { useDatosGrupo } from '@/lib/useDatosGrupo';
 
@@ -80,7 +92,14 @@ export default function DetallePasajero() {
 
       <Tarjeta>
         <Texto variante="etiqueta">{debe > 0 ? 'Te debe' : debe < 0 ? 'Tiene a favor' : 'Saldo'}</Texto>
-        <Text style={{ color: debe > 0 ? colores.deuda : colores.acento, fontSize: 40, fontWeight: '800' }}>
+        <Text
+          style={{
+            color: debe > 0 ? colores.acento : colores.texto,
+            fontSize: 40,
+            fontFamily: fuentes.extra,
+            fontVariant: ['tabular-nums'],
+          }}
+        >
           {debe === 0 ? 'Al día' : plata(Math.abs(debe))}
         </Text>
         <Texto variante="suave">
@@ -102,9 +121,9 @@ export default function DetallePasajero() {
           <Boton titulo={`Pagó todo (${plata(debe)})`} tipo="texto" chico alTocar={() => setMonto(String(debe))} />
         ) : null}
         <Campo etiqueta="Nota (opcional)" value={nota} onChangeText={setNota} placeholder="Efectivo, transferencia…" maxLength={120} />
-        {mensaje ? <Text style={{ color: colores.acento }}>{mensaje}</Text> : null}
+        {mensaje ? <Aviso texto={mensaje} /> : null}
         <MensajeError mensaje={error} />
-        <Boton titulo="Registrar pago" alTocar={registrarPago} cargando={guardando} />
+        <Boton titulo="Registrar pago" icono={HandCoins} alTocar={registrarPago} cargando={guardando} />
       </Tarjeta>
 
       <Seccion titulo="Historial">

@@ -1,12 +1,13 @@
+import { Car, Clock, HandCoins, SignOut } from 'phosphor-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { ListaMovimientos } from '@/components/Movimientos';
-import { Boton, Campo, Cargando, MensajeError, Pantalla, Seccion, Tarjeta, Texto } from '@/components/ui';
+import { Aviso, Boton, Campo, Cargando, MensajeError, Pantalla, Seccion, Tarjeta, Texto } from '@/components/ui';
 import { useSesion } from '@/context/sesion';
 import { fechaISO, plata } from '@/lib/formato';
 import { mensajeDeError, supabase } from '@/lib/supabase';
-import { colores, espacio } from '@/lib/tema';
+import { colores, espacio, fuentes } from '@/lib/tema';
 import { mezclarMovimientos } from '@/lib/tipos';
 import { useDatosGrupo } from '@/lib/useDatosGrupo';
 
@@ -89,41 +90,35 @@ export default function PanelPasajero() {
       {/* Saldo */}
       <Tarjeta style={{ alignItems: 'center', paddingVertical: espacio.xl }}>
         <Texto variante="etiqueta">{debe > 0 ? 'Le debés' : debe < 0 ? 'Tenés a favor' : 'Estás'}</Texto>
-        <Text style={[estilos.saldo, { color: debe > 0 ? colores.deuda : colores.acento }]}>
+        <Text style={[estilos.saldo, { color: debe > 0 ? colores.acento : colores.texto }]}>
           {debe === 0 ? 'Al día' : plata(Math.abs(debe))}
         </Text>
         <Texto variante="suave" style={{ textAlign: 'center' }}>
-          {saldo?.cantidad_viajes ?? 0} {saldo?.cantidad_viajes === 1 ? 'viaje' : 'viajes'} · pagaste {plata(saldo?.total_pagos ?? 0)}
+          {saldo?.cantidad_viajes ?? 0} {saldo?.cantidad_viajes === 1 ? 'viaje' : 'viajes'}, pagaste {plata(saldo?.total_pagos ?? 0)}
         </Texto>
         {pagosPendientes > 0 ? (
-          <Text style={{ color: colores.pendiente, fontWeight: '600' }}>
-            {plata(pagosPendientes)} en pagos esperando confirmación
-          </Text>
+          <View style={estilos.pendiente}>
+            <Clock size={16} color={colores.acento} />
+            <Text style={estilos.pendienteTexto}>{plata(pagosPendientes)} esperando confirmación</Text>
+          </View>
         ) : null}
       </Tarjeta>
 
       {/* Acciones */}
       <View style={{ gap: espacio.s }}>
-        {mensaje ? <Text style={{ color: colores.acento, textAlign: 'center' }}>{mensaje}</Text> : null}
+        {mensaje ? <Aviso texto={mensaje} /> : null}
         <MensajeError mensaje={error} />
         {viajeDeHoy ? (
-          <View
-            style={[
-              estilos.estadoHoy,
-              { borderColor: viajeDeHoy.estado === 'confirmado' ? colores.acento : colores.pendiente },
-            ]}
-          >
-            <Text style={{ color: viajeDeHoy.estado === 'confirmado' ? colores.acento : colores.pendiente, fontWeight: '700' }}>
-              {viajeDeHoy.estado === 'confirmado'
-                ? '✓ El viaje de hoy ya está registrado'
-                : `Avisaste el viaje de hoy · falta que ${chofer ?? 'quien maneja'} lo confirme`}
-            </Text>
-          </View>
+          viajeDeHoy.estado === 'confirmado' ? (
+            <Aviso texto="El viaje de hoy ya está registrado" />
+          ) : mensaje ? null : (
+            <Aviso icono={Clock} tono="suave" texto={`Avisaste el viaje de hoy. Falta que ${chofer ?? 'quien maneja'} lo confirme.`} />
+          )
         ) : (
-          <Boton titulo="🚗 Hoy fui" alTocar={avisarViaje} cargando={avisando} />
+          <Boton titulo="Hoy fui" icono={Car} alTocar={avisarViaje} cargando={avisando} />
         )}
         {!mostrarPago ? (
-          <Boton titulo="💵 Avisar que pagué" tipo="secundario" alTocar={() => setMostrarPago(true)} />
+          <Boton titulo="Avisar que pagué" icono={HandCoins} tipo="secundario" alTocar={() => setMostrarPago(true)} />
         ) : (
           <Tarjeta>
             <Texto variante="subtitulo">¿Cuánto le pagaste?</Texto>
@@ -155,20 +150,13 @@ export default function PanelPasajero() {
         <ListaMovimientos movimientos={movimientos} vacio="Cuando registres viajes o pagos, aparecen acá." />
       </Seccion>
 
-      <Boton titulo="Cerrar sesión" tipo="texto" alTocar={salir} />
+      <Boton titulo="Cerrar sesión" icono={SignOut} tipo="texto" alTocar={salir} />
     </Pantalla>
   );
 }
 
 const estilos = StyleSheet.create({
-  saldo: { fontSize: 48, fontWeight: '800', fontVariant: ['tabular-nums'], marginVertical: espacio.xs },
-  estadoHoy: {
-    minHeight: 50,
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: espacio.l,
-    paddingVertical: espacio.m,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  saldo: { fontSize: 52, fontFamily: fuentes.extra, fontVariant: ['tabular-nums'], marginVertical: espacio.xs },
+  pendiente: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: espacio.xs },
+  pendienteTexto: { color: colores.acento, fontFamily: fuentes.medio, fontSize: 14 },
 });

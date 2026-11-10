@@ -1,13 +1,25 @@
 import { router } from 'expo-router';
+import { CaretLeft, CaretRight, Check, CheckCircle, GearSix, ShareNetwork, X } from 'phosphor-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { FilaMovimiento } from '@/components/Movimientos';
-import { Boton, Cargando, Casilla, MensajeError, Pantalla, Seccion, Tarjeta, Texto } from '@/components/ui';
+import {
+  Aviso,
+  Boton,
+  BotonIcono,
+  Cargando,
+  Casilla,
+  MensajeError,
+  Pantalla,
+  Seccion,
+  Tarjeta,
+  Texto,
+} from '@/components/ui';
 import { useSesion } from '@/context/sesion';
 import { desdeISO, fechaCorta, fechaISO, plata, sumarDias } from '@/lib/formato';
 import { mensajeDeError, supabase } from '@/lib/supabase';
-import { colores, espacio, radio } from '@/lib/tema';
+import { colores, espacio, fuentes, radio, tamIcono } from '@/lib/tema';
 import { mezclarMovimientos } from '@/lib/tipos';
 import { useDatosGrupo } from '@/lib/useDatosGrupo';
 
@@ -57,11 +69,11 @@ export default function PanelChofer() {
     [datos.viajes, datos.pagos]
   );
 
-  const saldoDe = (id: string) => datos.saldos.find((s) => s.pasajero_id === id);
-  const totalAdeudado = datos.saldos.reduce((suma, s) => suma + Math.max(0, s.saldo), 0);
-
   if (!grupo) return null;
   if (datos.cargando) return <Cargando />;
+
+  const saldoDe = (id: string) => datos.saldos.find((s) => s.pasajero_id === id);
+  const totalAdeudado = datos.saldos.reduce((suma, s) => suma + Math.max(0, s.saldo), 0);
 
   function alternar(id: string) {
     setSeleccion((anterior) => {
@@ -86,7 +98,7 @@ export default function PanelChofer() {
     setRegistrando(false);
     if (error) return setError(mensajeDeError(error));
     setSeleccion(new Set());
-    setMensaje(`Listo: ${data} ${data === 1 ? 'viaje registrado' : 'viajes registrados'} (${fechaCorta(fecha).toLowerCase()}).`);
+    setMensaje(`${data === 1 ? 'Viaje registrado' : `${data} viajes registrados`} (${fechaCorta(fecha).toLowerCase()}).`);
     datos.recargar();
   }
 
@@ -113,7 +125,7 @@ export default function PanelChofer() {
           <Texto variante="suave">Hola, {perfil?.nombre}</Texto>
           <Texto variante="titulo">{grupo.nombre}</Texto>
         </View>
-        <Boton titulo="Ajustes" tipo="secundario" chico alTocar={() => router.push('/chofer/ajustes')} />
+        <BotonIcono icono={GearSix} etiqueta="Ajustes" alTocar={() => router.push('/chofer/ajustes')} />
       </View>
 
       <MensajeError mensaje={datos.error} />
@@ -121,38 +133,33 @@ export default function PanelChofer() {
       {datos.pasajeros.length === 0 ? (
         <Tarjeta>
           <Texto variante="subtitulo">Sumá a tus pasajeros</Texto>
-          <Texto variante="suave">Pasales este código para que se unan desde la app:</Texto>
+          <Texto variante="suave">Pasales este código para que se unan desde la app.</Texto>
           <Text style={estilos.codigo} selectable>
             {grupo.codigo}
           </Text>
+          <Boton titulo="Compartir código" icono={ShareNetwork} tipo="secundario" alTocar={() => router.push('/chofer/ajustes')} />
         </Tarjeta>
       ) : (
         <>
           {/* Registrar el viaje del día */}
           <Tarjeta>
             <View style={estilos.selectorFecha}>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Día anterior"
-                disabled={esElMasViejo}
-                onPress={() => setFecha(fechaISO(sumarDias(fechaDate, -1)))}
-                style={[estilos.flecha, esElMasViejo && { opacity: 0.3 }]}
-              >
-                <Text style={estilos.flechaTexto}>‹</Text>
-              </Pressable>
+              <BotonIcono
+                icono={CaretLeft}
+                etiqueta="Día anterior"
+                deshabilitado={esElMasViejo}
+                alTocar={() => setFecha(fechaISO(sumarDias(fechaDate, -1)))}
+              />
               <View style={{ alignItems: 'center', flex: 1 }}>
                 <Texto variante="etiqueta">¿Quién fue?</Texto>
                 <Texto variante="subtitulo">{fechaCorta(fecha)}</Texto>
               </View>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Día siguiente"
-                disabled={esHoy}
-                onPress={() => setFecha(fechaISO(sumarDias(fechaDate, 1)))}
-                style={[estilos.flecha, esHoy && { opacity: 0.3 }]}
-              >
-                <Text style={estilos.flechaTexto}>›</Text>
-              </Pressable>
+              <BotonIcono
+                icono={CaretRight}
+                etiqueta="Día siguiente"
+                deshabilitado={esHoy}
+                alTocar={() => setFecha(fechaISO(sumarDias(fechaDate, 1)))}
+              />
             </View>
 
             {datos.pasajeros.map((p) => {
@@ -169,15 +176,15 @@ export default function PanelChofer() {
               );
             })}
 
-            {mensaje ? <Text style={{ color: colores.acento }}>{mensaje}</Text> : null}
+            {mensaje ? <Aviso texto={mensaje} /> : null}
             <MensajeError mensaje={error} />
             {todosRegistrados ? (
-              <Text style={estilos.todosListos}>✓ Todos registrados {esHoy ? 'hoy' : 'ese día'}</Text>
+              mensaje ? null : <Aviso texto={`Todos registrados ${esHoy ? 'hoy' : 'ese día'}`} />
             ) : (
               <Boton
                 titulo={
                   nuevos > 0
-                    ? `Registrar ${nuevos} ${nuevos === 1 ? 'viaje' : 'viajes'} · ${plata(grupo.precio_viaje)} c/u`
+                    ? `Registrar ${nuevos} ${nuevos === 1 ? 'viaje' : 'viajes'} de ${plata(grupo.precio_viaje)}`
                     : 'Tildá quién fue'
                 }
                 alTocar={registrar}
@@ -191,12 +198,13 @@ export default function PanelChofer() {
           {pendientes.length > 0 ? (
             <Seccion titulo={`Para confirmar (${pendientes.length})`}>
               {pendientes.map((m) => (
-                <Tarjeta key={`${m.tipo}-${m.id}`} style={{ gap: espacio.s, borderColor: colores.pendiente }}>
+                <Tarjeta key={`${m.tipo}-${m.id}`} style={{ gap: espacio.s, borderColor: colores.acentoBorde }}>
                   <FilaMovimiento movimiento={m} nombre={nombres[m.pasajero_id]} />
                   <View style={{ flexDirection: 'row', gap: espacio.s }}>
                     <View style={{ flex: 1 }}>
                       <Boton
                         titulo="Rechazar"
+                        icono={X}
                         tipo="secundario"
                         chico
                         deshabilitado={resolviendo === m.id}
@@ -206,6 +214,7 @@ export default function PanelChofer() {
                     <View style={{ flex: 1 }}>
                       <Boton
                         titulo="Confirmar"
+                        icono={Check}
                         chico
                         cargando={resolviendo === m.id}
                         alTocar={() => resolver(m.tipo, m.id, true)}
@@ -218,32 +227,36 @@ export default function PanelChofer() {
           ) : null}
 
           {/* Cuánto debe cada uno */}
-          <Seccion
-            titulo="Saldos"
-            extra={<Texto variante="suave">Te deben {plata(totalAdeudado)}</Texto>}
-          >
+          <Seccion titulo="Saldos" extra={<Texto variante="suave">Te deben {plata(totalAdeudado)}</Texto>}>
             <View style={estilos.lista}>
               {datos.pasajeros.map((p, i) => {
-                const saldo = saldoDe(p.id);
-                const debe = (saldo?.saldo ?? 0) > 0;
+                const saldo = saldoDe(p.id)?.saldo ?? 0;
+                const viajes = saldoDe(p.id)?.cantidad_viajes ?? 0;
                 return (
                   <Pressable
                     key={p.id}
                     accessibilityRole="button"
-                    accessibilityHint="Ver el detalle y registrar pagos"
+                    accessibilityLabel={`${p.nombre}, ver detalle`}
                     onPress={() => router.push({ pathname: '/chofer/[pasajeroId]', params: { pasajeroId: p.id } })}
                     style={({ pressed }) => [estilos.filaSaldo, i > 0 && estilos.separador, pressed && { opacity: 0.7 }]}
                   >
                     <View style={{ flex: 1 }}>
-                      <Texto style={{ fontWeight: '600' }}>{p.nombre}</Texto>
+                      <Texto variante="fuerte">{p.nombre}</Texto>
                       <Texto variante="suave">
-                        {saldo?.cantidad_viajes ?? 0} {saldo?.cantidad_viajes === 1 ? 'viaje' : 'viajes'}
+                        {viajes} {viajes === 1 ? 'viaje' : 'viajes'}
                       </Texto>
                     </View>
-                    <Text style={[estilos.saldo, { color: debe ? colores.deuda : colores.acento }]}>
-                      {debe ? plata(saldo!.saldo) : (saldo?.saldo ?? 0) < 0 ? `A favor ${plata(-saldo!.saldo)}` : 'Al día'}
-                    </Text>
-                    <Text style={{ color: colores.textoSuave, fontSize: 20 }}>›</Text>
+                    {saldo > 0 ? (
+                      <Text style={[estilos.saldo, { color: colores.acento }]}>{plata(saldo)}</Text>
+                    ) : (
+                      <View style={estilos.alDia}>
+                        <CheckCircle size={tamIcono.s} color={colores.textoSuave} />
+                        <Text style={[estilos.saldo, { color: colores.textoSuave }]}>
+                          {saldo < 0 ? `A favor ${plata(-saldo)}` : 'Al día'}
+                        </Text>
+                      </View>
+                    )}
+                    <CaretRight size={tamIcono.s} color={colores.textoSuave} />
                   </Pressable>
                 );
               })}
@@ -256,26 +269,17 @@ export default function PanelChofer() {
 }
 
 const estilos = StyleSheet.create({
-  encabezado: { flexDirection: 'row', alignItems: 'flex-end', gap: espacio.m, marginTop: espacio.s },
+  encabezado: { flexDirection: 'row', alignItems: 'center', gap: espacio.m, marginTop: espacio.s },
   codigo: {
-    color: colores.texto,
+    color: colores.acento,
     fontSize: 40,
-    fontWeight: '800',
+    fontFamily: fuentes.extra,
     letterSpacing: 8,
     textAlign: 'center',
     paddingVertical: espacio.m,
     fontVariant: ['tabular-nums'],
   },
   selectorFecha: { flexDirection: 'row', alignItems: 'center' },
-  flecha: {
-    width: 44,
-    height: 44,
-    borderRadius: radio.pill,
-    backgroundColor: colores.superficie2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  flechaTexto: { color: colores.texto, fontSize: 26, lineHeight: 28, fontWeight: '600' },
   lista: {
     backgroundColor: colores.superficie,
     borderColor: colores.borde,
@@ -284,7 +288,7 @@ const estilos = StyleSheet.create({
     paddingHorizontal: espacio.l,
   },
   separador: { borderTopWidth: 1, borderTopColor: colores.borde },
-  filaSaldo: { flexDirection: 'row', alignItems: 'center', gap: espacio.m, paddingVertical: espacio.m, minHeight: 56 },
-  saldo: { fontSize: 16, fontWeight: '700', fontVariant: ['tabular-nums'] },
-  todosListos: { color: colores.acento, fontWeight: '700', textAlign: 'center', paddingVertical: espacio.s },
+  filaSaldo: { flexDirection: 'row', alignItems: 'center', gap: espacio.m, paddingVertical: espacio.m, minHeight: 60 },
+  saldo: { fontSize: 16, fontFamily: fuentes.semi, fontVariant: ['tabular-nums'] },
+  alDia: { flexDirection: 'row', alignItems: 'center', gap: 6 },
 });

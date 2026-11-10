@@ -1,10 +1,12 @@
 import { Link } from 'expo-router';
+import { SignIn } from 'phosphor-react-native';
 import { useState } from 'react';
 import { View } from 'react-native';
 
+import { Marca } from '@/components/Marca';
 import { Boton, Campo, MensajeError, Pantalla, Tarjeta, Texto } from '@/components/ui';
 import { mensajeDeError, supabase } from '@/lib/supabase';
-import { colores, espacio } from '@/lib/tema';
+import { colores, espacio, fuentes } from '@/lib/tema';
 
 export default function Ingresar() {
   const [email, setEmail] = useState('');
@@ -27,10 +29,14 @@ export default function Ingresar() {
 
   return (
     <Pantalla>
-      <View style={{ gap: espacio.s, marginTop: espacio.xxl }}>
-        <Texto style={{ fontSize: 40 }}>🚗</Texto>
-        <Texto variante="titulo">Control de viajes</Texto>
-        <Texto variante="suave">Quién fue, cuánto se debe y quién ya pagó, sin cuentas a mano.</Texto>
+      <View style={{ gap: espacio.l, marginTop: espacio.xxl }}>
+        <Marca />
+        <View style={{ gap: espacio.s }}>
+          <Texto variante="titulo">Control de viajes</Texto>
+          <Texto variante="suave" style={{ fontSize: 16, lineHeight: 23 }}>
+            Quién fue, cuánto se debe y quién ya pagó, sin cuentas a mano.
+          </Texto>
+        </View>
       </View>
 
       <Tarjeta>
@@ -48,18 +54,18 @@ export default function Ingresar() {
           etiqueta="Contraseña"
           value={contrasena}
           onChangeText={setContrasena}
-          secureTextEntry
+          contrasena
           autoComplete="current-password"
           textContentType="password"
           onSubmitEditing={ingresar}
         />
         <MensajeError mensaje={error} />
-        <Boton titulo="Ingresar" alTocar={ingresar} cargando={enviando} />
+        <Boton titulo="Ingresar" icono={SignIn} alTocar={ingresar} cargando={enviando} />
       </Tarjeta>
 
       <Texto variante="suave" style={{ textAlign: 'center' }}>
         ¿No tenés cuenta?{' '}
-        <Link href="/registro" style={{ color: colores.acento, fontWeight: '700' }}>
+        <Link href="/registro" style={{ color: colores.acento, fontFamily: fuentes.semi }}>
           Registrate
         </Link>
       </Texto>
