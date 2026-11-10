@@ -106,18 +106,22 @@ export default function PanelPasajero() {
       <View style={{ gap: espacio.s }}>
         {mensaje ? <Text style={{ color: colores.acento, textAlign: 'center' }}>{mensaje}</Text> : null}
         <MensajeError mensaje={error} />
-        <Boton
-          titulo={
-            viajeDeHoy
-              ? viajeDeHoy.estado === 'confirmado'
-                ? 'El viaje de hoy ya está registrado ✓'
-                : 'Avisaste el viaje de hoy ✓'
-              : '🚗 Hoy fui'
-          }
-          alTocar={avisarViaje}
-          cargando={avisando}
-          deshabilitado={!!viajeDeHoy}
-        />
+        {viajeDeHoy ? (
+          <View
+            style={[
+              estilos.estadoHoy,
+              { borderColor: viajeDeHoy.estado === 'confirmado' ? colores.acento : colores.pendiente },
+            ]}
+          >
+            <Text style={{ color: viajeDeHoy.estado === 'confirmado' ? colores.acento : colores.pendiente, fontWeight: '700' }}>
+              {viajeDeHoy.estado === 'confirmado'
+                ? '✓ El viaje de hoy ya está registrado'
+                : `Avisaste el viaje de hoy · falta que ${chofer ?? 'quien maneja'} lo confirme`}
+            </Text>
+          </View>
+        ) : (
+          <Boton titulo="🚗 Hoy fui" alTocar={avisarViaje} cargando={avisando} />
+        )}
         {!mostrarPago ? (
           <Boton titulo="💵 Avisar que pagué" tipo="secundario" alTocar={() => setMostrarPago(true)} />
         ) : (
@@ -128,7 +132,7 @@ export default function PanelPasajero() {
               value={monto}
               onChangeText={(t) => setMonto(t.replace(/\D/g, ''))}
               keyboardType="number-pad"
-              placeholder="5000"
+              placeholder="Ej: 5000"
               autoFocus
             />
             {debe > 0 ? (
@@ -158,4 +162,13 @@ export default function PanelPasajero() {
 
 const estilos = StyleSheet.create({
   saldo: { fontSize: 48, fontWeight: '800', fontVariant: ['tabular-nums'], marginVertical: espacio.xs },
+  estadoHoy: {
+    minHeight: 50,
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: espacio.l,
+    paddingVertical: espacio.m,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

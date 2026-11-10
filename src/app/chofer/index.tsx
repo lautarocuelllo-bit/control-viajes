@@ -103,6 +103,7 @@ export default function PanelChofer() {
   const esHoy = fecha === hoyISO;
   const esElMasViejo = fecha <= fechaISO(sumarDias(new Date(), -DIAS_ATRAS));
   const nuevos = [...seleccion].filter((id) => !yaRegistrados.has(id)).length;
+  const todosRegistrados = datos.pasajeros.length > 0 && datos.pasajeros.every((p) => yaRegistrados.has(p.id));
 
   return (
     <Pantalla recargando={datos.recargando} alRecargar={datos.recargar}>
@@ -170,16 +171,20 @@ export default function PanelChofer() {
 
             {mensaje ? <Text style={{ color: colores.acento }}>{mensaje}</Text> : null}
             <MensajeError mensaje={error} />
-            <Boton
-              titulo={
-                nuevos > 0
-                  ? `Registrar ${nuevos} ${nuevos === 1 ? 'viaje' : 'viajes'} · ${plata(grupo.precio_viaje)} c/u`
-                  : 'Registrar viajes'
-              }
-              alTocar={registrar}
-              cargando={registrando}
-              deshabilitado={nuevos === 0}
-            />
+            {todosRegistrados ? (
+              <Text style={estilos.todosListos}>✓ Todos registrados {esHoy ? 'hoy' : 'ese día'}</Text>
+            ) : (
+              <Boton
+                titulo={
+                  nuevos > 0
+                    ? `Registrar ${nuevos} ${nuevos === 1 ? 'viaje' : 'viajes'} · ${plata(grupo.precio_viaje)} c/u`
+                    : 'Tildá quién fue'
+                }
+                alTocar={registrar}
+                cargando={registrando}
+                deshabilitado={nuevos === 0}
+              />
+            )}
           </Tarjeta>
 
           {/* Avisos para confirmar */}
@@ -281,4 +286,5 @@ const estilos = StyleSheet.create({
   separador: { borderTopWidth: 1, borderTopColor: colores.borde },
   filaSaldo: { flexDirection: 'row', alignItems: 'center', gap: espacio.m, paddingVertical: espacio.m, minHeight: 56 },
   saldo: { fontSize: 16, fontWeight: '700', fontVariant: ['tabular-nums'] },
+  todosListos: { color: colores.acento, fontWeight: '700', textAlign: 'center', paddingVertical: espacio.s },
 });

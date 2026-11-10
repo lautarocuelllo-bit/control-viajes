@@ -84,7 +84,8 @@ export default function DetallePasajero() {
           {debe === 0 ? 'Al día' : plata(Math.abs(debe))}
         </Text>
         <Texto variante="suave">
-          {saldo?.cantidad_viajes ?? 0} viajes por {plata(saldo?.total_viajes ?? 0)} · pagó {plata(saldo?.total_pagos ?? 0)}
+          {saldo?.cantidad_viajes ?? 0} {saldo?.cantidad_viajes === 1 ? 'viaje' : 'viajes'} por{' '}
+          {plata(saldo?.total_viajes ?? 0)} · pagó {plata(saldo?.total_pagos ?? 0)}
         </Texto>
       </Tarjeta>
 
@@ -95,7 +96,7 @@ export default function DetallePasajero() {
           value={monto}
           onChangeText={(t) => setMonto(t.replace(/\D/g, ''))}
           keyboardType="number-pad"
-          placeholder="5000"
+          placeholder="Ej: 5000"
         />
         {debe > 0 ? (
           <Boton titulo={`Pagó todo (${plata(debe)})`} tipo="texto" chico alTocar={() => setMonto(String(debe))} />

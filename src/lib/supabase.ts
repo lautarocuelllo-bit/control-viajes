@@ -36,7 +36,10 @@ const TRADUCCIONES: [RegExp, string][] = [
   [/user already registered/i, 'Ya hay una cuenta con ese email.'],
   [/password should be at least/i, 'La contraseña tiene que tener al menos 6 caracteres.'],
   [/email not confirmed/i, 'Todavía no confirmaste tu email. Revisá tu casilla.'],
-  [/unable to validate email|invalid email/i, 'Ese email no es válido.'],
+  [/unable to validate email|invalid email|email address .* is invalid/i, 'Ese email no es válido.'],
+  [/signups? (are|is) (disabled|not allowed)/i, 'Por ahora no se pueden crear cuentas nuevas. Avisale al que maneja la app.'],
+  [/email rate limit/i, 'Se mandaron demasiados mails. Esperá un rato y probá de nuevo.'],
+  [/new password should be different/i, 'La contraseña nueva tiene que ser distinta a la anterior.'],
   [/rate limit|too many requests/i, 'Demasiados intentos. Esperá un minuto y probá de nuevo.'],
   [/failed to fetch|network request failed/i, 'No hay conexión. Revisá internet y probá de nuevo.'],
 ];

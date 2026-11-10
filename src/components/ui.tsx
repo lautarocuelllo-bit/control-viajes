@@ -111,13 +111,25 @@ export function Boton({
         chico && estilos.botonChico,
         estilos[`boton_${tipo}`],
         pressed && { opacity: 0.8 },
-        inactivo && { opacity: 0.5 },
+        // Deshabilitado se ve gris: un verde apagado parece que se puede tocar
+        deshabilitado && tipo === 'principal' && estilos.botonDeshabilitado,
+        cargando && { opacity: 0.7 },
+        deshabilitado && tipo !== 'principal' && { opacity: 0.5 },
       ]}
     >
       {cargando ? (
         <ActivityIndicator color={tipo === 'principal' ? colores.acentoTexto : colores.texto} />
       ) : (
-        <Text style={[estilos.botonTexto, estilos[`botonTexto_${tipo}`], chico && { fontSize: 14 }]}>{titulo}</Text>
+        <Text
+          style={[
+            estilos.botonTexto,
+            estilos[`botonTexto_${tipo}`],
+            chico && { fontSize: 14 },
+            deshabilitado && tipo === 'principal' && { color: colores.textoSuave },
+          ]}
+        >
+          {titulo}
+        </Text>
       )}
     </Pressable>
   );
@@ -246,6 +258,7 @@ const estilos = StyleSheet.create({
   },
   botonChico: { minHeight: 38, paddingHorizontal: espacio.m, borderRadius: radio.s },
   boton_principal: { backgroundColor: colores.acento },
+  botonDeshabilitado: { backgroundColor: colores.superficie2, borderWidth: 1, borderColor: colores.borde },
   boton_secundario: { backgroundColor: colores.superficie2, borderWidth: 1, borderColor: colores.borde },
   boton_peligro: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colores.peligro },
   boton_texto: { backgroundColor: 'transparent', minHeight: 40 },

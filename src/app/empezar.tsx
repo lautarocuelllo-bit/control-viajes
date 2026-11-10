@@ -77,7 +77,7 @@ export default function Empezar() {
           value={precio}
           onChangeText={(t) => setPrecio(t.replace(/\D/g, ''))}
           keyboardType="number-pad"
-          placeholder="2500"
+          placeholder="Ej: 2500"
           ayuda="Lo podés cambiar cuando quieras. Los viajes ya registrados mantienen su precio."
         />
         <MensajeError mensaje={errorCrear} />
