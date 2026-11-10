@@ -1,0 +1,13 @@
+# Versión web de la app (para iPhone sin instalar nada, Windows y Linux).
+# En Netlify hay que cargar EXPO_PUBLIC_SUPABASE_URL y EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+# en Site configuration > Environment variables: se usan al compilar.
+
+[build]
+  command = "npx expo export --platform web"
+  publish = "dist"
+
+# Todas las rutas (/chofer, /pasajero, etc.) las resuelve la app
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
