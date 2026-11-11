@@ -1,13 +1,16 @@
 ﻿# Compila el APK de Android y lo publica como release de GitHub.
 #
-#   .\scripts\publicar-apk.ps1                 compila y publica la versión de app.json
-#   .\scripts\publicar-apk.ps1 -SoloCompilar   compila sin subir nada
+#   npm run apk                                     compila y publica la versión de app.json
+#   npm run apk -- -Novedades "Ahora podés salir del grupo"   con el texto que ve la gente en el aviso
+#   npm run apk -- -SoloCompilar                    compila sin subir nada
 #
-# Si existe el logo propio de assets/local, el APK lo usa como ícono y marca.
+# Los que tienen la app instalada ven un aviso con el botón Actualizar
+# (src/components/Anuncios.tsx), que lee el release más nuevo de GitHub.
 # Necesita Android Studio y, para publicar, GitHub CLI (gh) con sesión iniciada.
 
 param(
-  [switch]$SoloCompilar
+  [switch]$SoloCompilar,
+  [string]$Novedades = 'Mejoras y correcciones.'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -66,7 +69,7 @@ Write-Host "`nAPK listo: $apk ($mb MB)" -ForegroundColor Green
 if ($SoloCompilar) { return }
 
 Write-Host "`nPublicando $etiqueta en GitHub..." -ForegroundColor Yellow
-gh release create $etiqueta $apk --title "Control de viajes $version" --notes "APK para Android. Descargalo desde el celular, abrilo y aceptá instalar apps desconocidas."
+gh release create $etiqueta $apk --title "Control de viajes $version" --notes $Novedades
 if ($LASTEXITCODE -ne 0) { throw 'Falló la publicación en GitHub' }
 
 $repo = gh repo view --json nameWithOwner -q .nameWithOwner

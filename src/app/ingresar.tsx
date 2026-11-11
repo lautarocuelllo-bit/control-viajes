@@ -3,6 +3,7 @@ import { SignIn } from 'phosphor-react-native';
 import { useState } from 'react';
 import { View } from 'react-native';
 
+import { Anuncios } from '@/components/Anuncios';
 import { Marca } from '@/components/Marca';
 import { Boton, Campo, MensajeError, Pantalla, Tarjeta, Texto } from '@/components/ui';
 import { mensajeDeError, supabase } from '@/lib/supabase';
@@ -29,6 +30,7 @@ export default function Ingresar() {
 
   return (
     <Pantalla>
+      <Anuncios />
       <View style={{ gap: espacio.l, marginTop: espacio.xxl }}>
         <Marca />
         <View style={{ gap: espacio.s }}>

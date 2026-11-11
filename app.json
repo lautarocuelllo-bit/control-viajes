@@ -2,7 +2,7 @@
   "expo": {
     "name": "Control de viajes",
     "slug": "control-viajes",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -13,16 +13,18 @@
       "package": "com.genesiscodestudio.controlviajes",
       "adaptiveIcon": {
         "backgroundColor": "#0c0c0d",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "foregroundImage": "./assets/android-icon-foreground.png"
       },
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "output": "single",
-      "bundler": "metro"
+      "bundler": "metro",
+      "lang": "es",
+      "themeColor": "#0c0c0d",
+      "backgroundColor": "#0c0c0d",
+      "description": "Quién fue, cuánto se debe y quién ya pagó."
     },
     "plugins": [
       "expo-router",

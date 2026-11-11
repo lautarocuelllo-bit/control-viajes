@@ -3,6 +3,7 @@ import { CaretLeft, CaretRight, Check, CheckCircle, GearSix, ShareNetwork, X } f
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Anuncios } from '@/components/Anuncios';
 import { Marca } from '@/components/Marca';
 import { FilaMovimiento } from '@/components/Movimientos';
 import {
@@ -171,6 +172,7 @@ export default function PanelChofer() {
         <BotonIcono icono={GearSix} etiqueta="Ajustes" alTocar={() => router.push('/chofer/ajustes')} />
       </View>
 
+      <Anuncios />
       <MensajeError mensaje={datos.error} />
 
       {datos.pasajeros.length === 0 ? (

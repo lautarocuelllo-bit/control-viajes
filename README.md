@@ -34,6 +34,10 @@ Esta versión vive en la nube y cada uno la abre desde su teléfono o la compu.
 
 Los cambios aparecen al instante en todos los teléfonos (tiempo real de Supabase).
 
+**Instalarla**
+- **Android:** el APK del último release. Cuando sale una versión nueva, la app muestra un aviso con el botón **Actualizar**.
+- **iPhone:** desde Safari, Compartir → **Agregar a inicio**. Se abre como una app, sin la barra del navegador; la web lo explica la primera vez que entrás.
+
 ## Tecnologías
 
 - **[Expo](https://expo.dev) (React Native)** con TypeScript y Expo Router: un solo código para Android, iOS y web.
@@ -73,7 +77,7 @@ npm run apk -- -SoloCompilar   # compila en dist-apk/control-viajes.apk
 npm run apk                    # compila y lo publica como release de GitHub (necesita gh)
 ```
 
-El script (`scripts/publicar-apk.ps1`) toma la versión de `app.json`, compila (con el logo propio de `assets/local` si existe) y publica el release `v<versión>`. Para sacar una versión nueva, subí `version` en `app.json` (el `versionCode` de Android se calcula solo). El APK lleva adentro los datos de `.env.local`, así que hay que completarlo antes de compilar.
+El script (`scripts/publicar-apk.ps1`) toma la versión de `app.json`, compila y publica el release `v<versión>`. Para sacar una versión nueva, subí `version` en `app.json` (el `versionCode` de Android se calcula solo). El APK lleva adentro los datos de `.env.local`, así que hay que completarlo antes de compilar.
 
 **En Windows** algunas librerías nativas generan rutas de más de 260 caracteres y la compilación falla con `ninja: error: mkdir(...)`. Para evitarlo:
 
@@ -82,10 +86,6 @@ El script (`scripts/publicar-apk.ps1`) toma la versión de `app.json`, compila (
    ```properties
    cmake.dir=C\:\\Users\\TU_USUARIO\\AppData\\Local\\Android\\Sdk\\cmake\\3.31.6
    ```
-
-### Logo propio (opcional)
-
-Si ponés `logo.png` (cuadrado, 256 px o más), `icon.png` (1024 px) y `favicon.png` en `assets/local/`, la app los usa como marca, ícono y favicon. Esa carpeta está en el `.gitignore`, así que no se sube: sin ella la app muestra la marca por defecto. Después de agregarlos, reiniciá con `npx expo start --clear`.
 
 ## Estructura
 

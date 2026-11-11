@@ -43,5 +43,5 @@ yarn-error.*
 # APK compilado por scripts/publicar-apk.ps1
 dist-apk/
 
-# Logo propio que no se sube al repo (ver README)
+# Copia vieja del logo (ahora está en assets/logo.png)
 assets/local/

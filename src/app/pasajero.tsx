@@ -2,6 +2,7 @@ import { Car, Clock, HandCoins, SignOut, UserMinus } from 'phosphor-react-native
 import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { Anuncios } from '@/components/Anuncios';
 import { Marca } from '@/components/Marca';
 import { ListaMovimientos } from '@/components/Movimientos';
 import { Aviso, Boton, Campo, Cargando, confirmar, MensajeError, Pantalla, Seccion, Tarjeta, Texto } from '@/components/ui';
@@ -112,6 +113,7 @@ export default function PanelPasajero() {
         </Texto>
       ) : null}
 
+      <Anuncios />
       <MensajeError mensaje={datos.error} />
 
       {/* Saldo */}
