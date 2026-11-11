@@ -69,10 +69,18 @@ Con [Android Studio](https://developer.android.com/studio) instalado:
 ```bash
 npx expo prebuild --platform android
 cd android
-./gradlew assembleRelease
+./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a
 ```
 
 El APK queda en `android/app/build/outputs/apk/release/app-release.apk`. Lleva adentro los datos de `.env.local`, así que hay que completarlo antes de compilar.
+
+**En Windows** algunas librerías nativas generan rutas de más de 260 caracteres y la compilación falla con `ninja: error: mkdir(...)`. Para evitarlo:
+
+1. Tené el proyecto en una ruta corta, por ejemplo `C:\cv`.
+2. Instalá CMake 3.31.6 desde el SDK Manager (trae un `ninja` que soporta rutas largas) y apuntá Gradle a esa versión en `android/local.properties`:
+   ```properties
+   cmake.dir=C\:\\Users\\TU_USUARIO\\AppData\\Local\\Android\\Sdk\\cmake\\3.31.6
+   ```
 
 ### Logo propio (opcional)
 
