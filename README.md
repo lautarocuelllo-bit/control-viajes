@@ -21,7 +21,8 @@ Esta versión vive en la nube y cada uno la abre desde su teléfono o la compu.
 - Crea el grupo, define el precio por viaje y les pasa a los demás un código de 6 números.
 - Cada día tilda quién fue y lo registra con un toque. También puede cargar días anteriores.
 - Confirma o rechaza los avisos de los pasajeros.
-- Ve el saldo de cada uno, registra los pagos que recibe y anula lo que se cargó por error.
+- Ve el saldo de cada uno, registra los pagos que recibe y anula lo que se cargó por error. Si alguien le paga todo junto, salda la deuda con un toque.
+- Quita del grupo a quien ya no viaja. Si se va debiendo, lo sigue viendo aparte hasta que le pague.
 - Cambia el precio cuando sube la nafta. Los viajes ya registrados guardan el precio que tenían.
 - Trae las cuentas de la app vieja: pega el `historial.json` (o el `deudas.json`) de `viajes.py`, elige quién es quién y se cargan los viajes, pagos o deudas anteriores.
 
@@ -29,6 +30,7 @@ Esta versión vive en la nube y cada uno la abre desde su teléfono o la compu.
 - Ven su saldo y su historial.
 - Si el que maneja se olvidó de cargar el día, tocan **"Hoy fui"** y él lo confirma.
 - Avisan cuando pagan. El saldo baja recién cuando el que maneja lo confirma.
+- Pueden salir del grupo. Si vuelven a unirse con el código, recuperan su historial.
 
 Los cambios aparecen al instante en todos los teléfonos (tiempo real de Supabase).
 

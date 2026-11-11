@@ -6,13 +6,15 @@ import type { DeudaAnterior, Pago, Perfil, Saldo, Viaje } from '@/lib/tipos';
 type Datos = {
   /** Pasajeros del grupo (el chofer ve a todos; el pasajero solo a sí mismo) */
   pasajeros: Perfil[];
+  /** Los que se fueron o el chofer quitó (solo los ve el chofer) */
+  exPasajeros: Perfil[];
   saldos: Saldo[];
   viajes: Viaje[];
   pagos: Pago[];
   deudas: DeudaAnterior[];
 };
 
-const VACIO: Datos = { pasajeros: [], saldos: [], viajes: [], pagos: [], deudas: [] };
+const VACIO: Datos = { pasajeros: [], exPasajeros: [], saldos: [], viajes: [], pagos: [], deudas: [] };
 
 /**
  * Carga todo lo del grupo y se vuelve a cargar solo cuando alguien
@@ -30,7 +32,7 @@ export function useDatosGrupo(grupoId: string | undefined, alCambiarGrupo?: () =
   const cargar = useCallback(async () => {
     if (!grupoId) return;
     const [miembros, saldos, viajes, pagos, deudas] = await Promise.all([
-      supabase.from('miembros').select('perfiles(id, nombre)').eq('grupo_id', grupoId),
+      supabase.from('miembros').select('salio_at, perfiles(id, nombre)').eq('grupo_id', grupoId),
       supabase.from('saldos').select('*').eq('grupo_id', grupoId),
       supabase
         .from('viajes')
@@ -58,11 +60,15 @@ export function useDatosGrupo(grupoId: string | undefined, alCambiarGrupo?: () =
       return;
     }
     setError(null);
+    const filas = (miembros.data ?? []) as unknown as { salio_at: string | null; perfiles: Perfil | null }[];
+    const personas = (activos: boolean) =>
+      filas
+        .filter((m) => !!m.perfiles && (m.salio_at === null) === activos)
+        .map((m) => m.perfiles as Perfil)
+        .sort((a, b) => a.nombre.localeCompare(b.nombre));
     setDatos({
-      pasajeros: (miembros.data ?? [])
-        .map((m) => (m as unknown as { perfiles: Perfil | null }).perfiles)
-        .filter((p): p is Perfil => !!p)
-        .sort((a, b) => a.nombre.localeCompare(b.nombre)),
+      pasajeros: personas(true),
+      exPasajeros: personas(false),
       saldos: (saldos.data ?? []) as Saldo[],
       viajes: (viajes.data ?? []) as Viaje[],
       pagos: (pagos.data ?? []) as Pago[],
@@ -89,7 +95,11 @@ export function useDatosGrupo(grupoId: string | undefined, alCambiarGrupo?: () =
       .channel(`grupo-${grupoId}-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'viajes', filter: filtro }, recargarPronto)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'pagos', filter: filtro }, recargarPronto)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'miembros', filter: filtro }, recargarPronto)
+      // Si alguien sale o lo quitan, también cambia la sesión de esa persona
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'miembros', filter: filtro }, () => {
+        recargarPronto();
+        alCambiarGrupoRef.current?.();
+      })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'deudas_anteriores', filter: filtro }, recargarPronto)
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'grupos', filter: `id=eq.${grupoId}` }, () =>
         alCambiarGrupoRef.current?.()
@@ -107,5 +117,6 @@ export function useDatosGrupo(grupoId: string | undefined, alCambiarGrupo?: () =
     setRecargando(false);
   }, [cargar]);
 
-  return { ...datos, cargando, recargando, error, recargar };
+  // refrescar: vuelve a cargar sin mostrar el indicador (al volver a una pantalla)
+  return { ...datos, cargando, recargando, error, recargar, refrescar: cargar };
 }

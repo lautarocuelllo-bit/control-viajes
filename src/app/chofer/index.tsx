@@ -1,6 +1,6 @@
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { CaretLeft, CaretRight, Check, CheckCircle, GearSix, ShareNetwork, X } from 'phosphor-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Marca } from '@/components/Marca';
@@ -38,9 +38,17 @@ export default function PanelChofer() {
   const [error, setError] = useState<string | null>(null);
   const [resolviendo, setResolviendo] = useState<string | null>(null);
 
+  // Al volver del detalle de un pasajero o de ajustes, los datos pueden haber cambiado
+  const { refrescar } = datos;
+  useFocusEffect(
+    useCallback(() => {
+      refrescar();
+    }, [refrescar])
+  );
+
   const nombres = useMemo(
-    () => Object.fromEntries(datos.pasajeros.map((p) => [p.id, p.nombre])),
-    [datos.pasajeros]
+    () => Object.fromEntries([...datos.pasajeros, ...datos.exPasajeros].map((p) => [p.id, p.nombre])),
+    [datos.pasajeros, datos.exPasajeros]
   );
 
   // Viajes de la fecha elegida, por pasajero
@@ -75,6 +83,39 @@ export default function PanelChofer() {
 
   const saldoDe = (id: string) => datos.saldos.find((s) => s.pasajero_id === id);
   const totalAdeudado = datos.saldos.reduce((suma, s) => suma + Math.max(0, s.saldo), 0);
+  const exConSaldo = datos.exPasajeros.filter((p) => (saldoDe(p.id)?.saldo ?? 0) !== 0);
+
+  function filaSaldo(p: { id: string; nombre: string }, i: number) {
+    const saldo = saldoDe(p.id)?.saldo ?? 0;
+    const viajes = saldoDe(p.id)?.cantidad_viajes ?? 0;
+    return (
+      <Pressable
+        key={p.id}
+        accessibilityRole="button"
+        accessibilityLabel={`${p.nombre}, ver detalle`}
+        onPress={() => router.push({ pathname: '/chofer/[pasajeroId]', params: { pasajeroId: p.id } })}
+        style={({ pressed }) => [estilos.filaSaldo, i > 0 && estilos.separador, pressed && { opacity: 0.7 }]}
+      >
+        <View style={{ flex: 1 }}>
+          <Texto variante="fuerte">{p.nombre}</Texto>
+          <Texto variante="suave">
+            {viajes} {viajes === 1 ? 'viaje' : 'viajes'}
+          </Texto>
+        </View>
+        {saldo > 0 ? (
+          <Text style={[estilos.saldo, { color: colores.acento }]}>{plata(saldo)}</Text>
+        ) : (
+          <View style={estilos.alDia}>
+            <CheckCircle size={tamIcono.s} color={colores.textoSuave} />
+            <Text style={[estilos.saldo, { color: colores.textoSuave }]}>
+              {saldo < 0 ? `A favor ${plata(-saldo)}` : 'Al día'}
+            </Text>
+          </View>
+        )}
+        <CaretRight size={tamIcono.s} color={colores.textoSuave} />
+      </Pressable>
+    );
+  }
 
   function alternar(id: string) {
     setSeleccion((anterior) => {
@@ -231,41 +272,18 @@ export default function PanelChofer() {
           {/* Cuánto debe cada uno */}
           <Seccion titulo="Saldos" extra={<Texto variante="suave">Te deben {plata(totalAdeudado)}</Texto>}>
             <View style={estilos.lista}>
-              {datos.pasajeros.map((p, i) => {
-                const saldo = saldoDe(p.id)?.saldo ?? 0;
-                const viajes = saldoDe(p.id)?.cantidad_viajes ?? 0;
-                return (
-                  <Pressable
-                    key={p.id}
-                    accessibilityRole="button"
-                    accessibilityLabel={`${p.nombre}, ver detalle`}
-                    onPress={() => router.push({ pathname: '/chofer/[pasajeroId]', params: { pasajeroId: p.id } })}
-                    style={({ pressed }) => [estilos.filaSaldo, i > 0 && estilos.separador, pressed && { opacity: 0.7 }]}
-                  >
-                    <View style={{ flex: 1 }}>
-                      <Texto variante="fuerte">{p.nombre}</Texto>
-                      <Texto variante="suave">
-                        {viajes} {viajes === 1 ? 'viaje' : 'viajes'}
-                      </Texto>
-                    </View>
-                    {saldo > 0 ? (
-                      <Text style={[estilos.saldo, { color: colores.acento }]}>{plata(saldo)}</Text>
-                    ) : (
-                      <View style={estilos.alDia}>
-                        <CheckCircle size={tamIcono.s} color={colores.textoSuave} />
-                        <Text style={[estilos.saldo, { color: colores.textoSuave }]}>
-                          {saldo < 0 ? `A favor ${plata(-saldo)}` : 'Al día'}
-                        </Text>
-                      </View>
-                    )}
-                    <CaretRight size={tamIcono.s} color={colores.textoSuave} />
-                  </Pressable>
-                );
-              })}
+              {datos.pasajeros.map(filaSaldo)}
             </View>
           </Seccion>
         </>
       )}
+
+      {/* Los que se fueron con deuda o saldo a favor, para poder saldarla */}
+      {exConSaldo.length > 0 ? (
+        <Seccion titulo="Ya no están en el grupo">
+          <View style={estilos.lista}>{exConSaldo.map(filaSaldo)}</View>
+        </Seccion>
+      ) : null}
     </Pantalla>
   );
 }

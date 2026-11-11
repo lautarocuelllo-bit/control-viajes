@@ -2,7 +2,7 @@ import { Car, Clock, ClockCounterClockwise, HandCoins, type Icon, Prohibit, XCir
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Boton, Texto } from '@/components/ui';
-import { fechaCorta, plata } from '@/lib/formato';
+import { fechaCorta, fechaISO, plata } from '@/lib/formato';
 import { colores, espacio, fuentes, radio, tamIcono } from '@/lib/tema';
 import type { Estado, Movimiento } from '@/lib/tipos';
 
@@ -65,16 +65,19 @@ export function FilaMovimiento({
   );
 }
 
+/** Día en la hora del teléfono (created_at viene en UTC: un pago a las 22 h no es del día siguiente) */
+const diaLocal = (momento: string) => fechaISO(new Date(momento));
+
 function describir(m: Movimiento): { titulo: string; fecha: string; detalle: string | null; suma: boolean; IconoTipo: Icon } {
   switch (m.tipo) {
     case 'viaje':
       return { titulo: 'Viaje', fecha: m.fecha, detalle: null, suma: true, IconoTipo: Car };
     case 'pago':
-      return { titulo: 'Pago', fecha: m.created_at.slice(0, 10), detalle: m.nota, suma: false, IconoTipo: HandCoins };
+      return { titulo: 'Pago', fecha: diaLocal(m.created_at), detalle: m.nota, suma: false, IconoTipo: HandCoins };
     case 'deuda':
       return {
         titulo: m.monto > 0 ? 'Deuda anterior' : 'Saldo a favor anterior',
-        fecha: m.created_at.slice(0, 10),
+        fecha: diaLocal(m.created_at),
         detalle: m.nota,
         suma: m.monto > 0,
         IconoTipo: ClockCounterClockwise,

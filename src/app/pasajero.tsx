@@ -1,10 +1,10 @@
-import { Car, Clock, HandCoins, SignOut } from 'phosphor-react-native';
+import { Car, Clock, HandCoins, SignOut, UserMinus } from 'phosphor-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Marca } from '@/components/Marca';
 import { ListaMovimientos } from '@/components/Movimientos';
-import { Aviso, Boton, Campo, Cargando, MensajeError, Pantalla, Seccion, Tarjeta, Texto } from '@/components/ui';
+import { Aviso, Boton, Campo, Cargando, confirmar, MensajeError, Pantalla, Seccion, Tarjeta, Texto } from '@/components/ui';
 import { useSesion } from '@/context/sesion';
 import { fechaISO, plata } from '@/lib/formato';
 import { mensajeDeError, supabase } from '@/lib/supabase';
@@ -49,6 +49,22 @@ export default function PanelPasajero() {
   const hoy = fechaISO(new Date());
   const viajeDeHoy = datos.viajes.find((v) => v.fecha === hoy && (v.estado === 'pendiente' || v.estado === 'confirmado'));
   const pagosPendientes = datos.pagos.filter((p) => p.estado === 'pendiente').reduce((s, p) => s + p.monto, 0);
+
+  async function salirDelGrupo() {
+    if (!grupo || !perfil) return;
+    const quien = chofer ?? 'quien maneja';
+    const aviso =
+      debe > 0 ? ` Todavía le debés ${plata(debe)}: ${quien} lo sigue viendo hasta que le pagues.` : '';
+    const ok = await confirmar(
+      `Salir de ${grupo.nombre}`,
+      `Vas a dejar de ver el grupo. Si volvés a unirte con el código, recuperás tu historial.${aviso}`,
+      'Salir'
+    );
+    if (!ok) return;
+    const { error } = await supabase.rpc('quitar_del_grupo', { p_grupo: grupo.id, p_perfil: perfil.id });
+    if (error) return setError(mensajeDeError(error));
+    await recargarSesion();
+  }
 
   async function avisarViaje() {
     if (!grupo) return;
@@ -163,7 +179,10 @@ ${saldo.deuda_anterior > 0 ? 'Deuda' : 'A favor'} de antes: ${plata(Math.abs(sal
         <ListaMovimientos movimientos={movimientos} vacio="Cuando registres viajes o pagos, aparecen acá." />
       </Seccion>
 
-      <Boton titulo="Cerrar sesión" icono={SignOut} tipo="texto" alTocar={salir} />
+      <View style={{ gap: espacio.xs }}>
+        <Boton titulo="Salir del grupo" icono={UserMinus} tipo="texto" alTocar={salirDelGrupo} />
+        <Boton titulo="Cerrar sesión" icono={SignOut} tipo="texto" alTocar={salir} />
+      </View>
     </Pantalla>
   );
 }

@@ -39,7 +39,13 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
       const [{ data: miPerfil }, { data: comoChofer }, { data: comoPasajero }] = await Promise.all([
         supabase.from('perfiles').select('id, nombre').eq('id', uid).maybeSingle(),
         supabase.from('grupos').select('*').eq('chofer_id', uid).order('created_at').limit(1),
-        supabase.from('miembros').select('grupos(*)').eq('perfil_id', uid).order('unido_at').limit(1),
+        supabase
+          .from('miembros')
+          .select('grupos(*)')
+          .eq('perfil_id', uid)
+          .is('salio_at', null)
+          .order('unido_at')
+          .limit(1),
       ]);
 
       setPerfil(miPerfil ?? null);

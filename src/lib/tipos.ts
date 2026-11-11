@@ -51,6 +51,8 @@ export type Saldo = {
   total_pagos: number;
   saldo: number;
   deuda_anterior: number;
+  /** false si la persona se fue o la quitaron del grupo */
+  activo: boolean;
 };
 
 /** Viajes, pagos y deudas anteriores mezclados en una sola lista, ordenada por fecha */
