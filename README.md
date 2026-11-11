@@ -2,7 +2,7 @@
 
 App para llevar la cuenta de los viajes compartidos: quién fue cada día, cuánto le debe cada uno al que maneja y quién ya pagó. Funciona en Android, iPhone y en la web.
 
-**[Abrir la app → viajes.genesiscodestudio.com](https://viajes.genesiscodestudio.com)**
+**[Abrir la app → viajes.genesiscodestudio.com](https://viajes.genesiscodestudio.com)** · **[Descargar el APK para Android](https://github.com/lautarocuelllo-bit/control-viajes/releases/latest/download/control-viajes.apk)**
 
 ![Ingreso, panel del que maneja y panel del pasajero](docs/capturas/pantallas.png)
 
@@ -69,12 +69,11 @@ Con la app **Expo Go** escaneás el QR para abrirla en el teléfono, o apretás 
 Con [Android Studio](https://developer.android.com/studio) instalado:
 
 ```bash
-npx expo prebuild --platform android
-cd android
-./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a
+npm run apk -- -SoloCompilar   # compila en dist-apk/control-viajes.apk
+npm run apk                    # compila y lo publica como release de GitHub (necesita gh)
 ```
 
-El APK queda en `android/app/build/outputs/apk/release/app-release.apk`. Lleva adentro los datos de `.env.local`, así que hay que completarlo antes de compilar.
+El script (`scripts/publicar-apk.ps1`) toma la versión de `app.json`, compila (con el logo propio de `assets/local` si existe) y publica el release `v<versión>`. Para sacar una versión nueva, subí `version` en `app.json` (el `versionCode` de Android se calcula solo). El APK lleva adentro los datos de `.env.local`, así que hay que completarlo antes de compilar.
 
 **En Windows** algunas librerías nativas generan rutas de más de 260 caracteres y la compilación falla con `ninja: error: mkdir(...)`. Para evitarlo:
 
